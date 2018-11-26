@@ -1,0 +1,31 @@
+version: "2"
+services:
+  saikiranlavanya:
+    container_name: saikiranlavanya
+    restart: always
+    build: .
+    ports:
+      - 80:80
+    links:
+      - mongo
+    networks:
+      - takatukanet
+    depends_on:
+      - mongo
+    expose:
+      - 80
+    environment:
+      WAIT_HOSTS: mongo:27017
+      MONGO_URL: mongodb://mongo/saikiranlavanya
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - takatukanet
+networks:
+  takatukanet:
+    driver: bridge

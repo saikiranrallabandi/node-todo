@@ -1,0 +1,162 @@
+swagger: "2.0"
+info:
+  version: "1.2.0"
+  title: saikiranlavanya
+# during dev, should point to your local machine
+host: localhost:80
+# basePath prefixes all resource paths
+basePath: /api/
+#
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /items:
+    x-swagger-router-controller: items
+
+    get:
+      description: Returns all items
+      # used as the method name of the controller
+      operationId: items
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/Items"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    post:
+      description: Add a new item to the list
+      operationId: save
+      parameters:
+        - name: item
+          description: Item properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Item"
+      responses:
+        "201":
+          description: Success
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /items/{id}:
+    x-swagger-router-controller: items
+
+    get:
+      description: Get a item
+      operationId: find
+      parameters:
+        - name: id
+          description: Item id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Item"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    put:
+      description: Update an item
+      operationId: update
+      parameters:
+        - name: id
+          description: Item id
+          type: string
+          in: path
+          required: true
+        - name: item
+          description: Item properties
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Item"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+    delete:
+      description: Delete an item
+      operationId: remove
+      parameters:
+        - name: id
+          description: Item id
+          type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Response"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  Item:
+    properties:
+      id:
+        type: string
+        description: Unique identifier representing a item
+      title:
+        type: string
+        description: Title of the item
+      user:
+        type: string
+        description: User of the item
+  Items:
+    type: array
+    items:
+      $ref: '#/definitions/Item'
+
+  Response:
+    type: object
+    properties:
+      success:
+        type: number
+      description:
+        type: string
+    required:
+      - success
+      - description
+
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
